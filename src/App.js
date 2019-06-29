@@ -12,19 +12,52 @@ const {Row, Column} = Grid
 
 const PROGRAMISTA_15K = 15000
 
-const renderError = (touched, error) => touched
-  ? Boolean(error) && <Message color="red">{error}</Message>
-  : null
+const renderError = (touched, error) =>
+  touched ? Boolean(error) && <Message color="red">{error}</Message> : null
+
+const getUserData = () => {
+  return (
+    JSON.parse(localStorage.getItem('QE')) || {
+      income: PROGRAMISTA_15K,
+      additionalIncome: 0,
+      expenses: [],
+    }
+  )
+}
+
+const persistExpense = expense => {
+  const userData = getUserData()
+
+  localStorage.setItem(
+    'QE',
+    JSON.stringify({
+      ...userData,
+      expenses: [...userData.expenses, expense],
+    }),
+  )
+
+  return {ok: true}
+}
 
 class App extends Component {
   constructor(props) {
     super(props)
 
-    this.state = {}
+    this.state = {expenses: [], additionalIncome: 0, income: PROGRAMISTA_15K}
+  }
+
+  async componentDidMount() {
+    const userData = await getUserData()
+
+    this.setState(userData)
   }
 
   renderBalance = () => {
-    const balance = PROGRAMISTA_15K
+    const {income, additionalIncome, expenses} = this.state
+    const balance =
+      income +
+      additionalIncome -
+      expenses.reduce((accu, expense) => accu + expense.howMuch, 0)
 
     return (
       <Label color="green" size="huge">
@@ -41,8 +74,25 @@ class App extends Component {
     return (
       <Formik
         initialValues={{expense: '', howMuch: 0, category: '', fixed: false}}
-        onSubmit={(values, {setSubmitting, resetForm}) => {
-          resetForm()
+        onSubmit={async (values, {setSubmitting, resetForm}) => {
+          setSubmitting(true)
+
+          const {errors} = await persistExpense(values)
+
+          if (errors && errors.length) {
+            // TODO
+            return
+          }
+
+          this.setState(
+            oldState => ({
+              expenses: [...oldState.expenses, values],
+            }),
+            () => {
+              setSubmitting(false)
+              resetForm()
+            },
+          )
         }}
         validationSchema={Yup.object().shape({
           category: Yup.string().required('kategoria jest potrzebna'),
