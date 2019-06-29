@@ -15,29 +15,30 @@ const PROGRAMISTA_15K = 15000
 const renderError = (touched, error) =>
   touched ? Boolean(error) && <Message color="red">{error}</Message> : null
 
-const getUserData = () => {
-  return (
-    JSON.parse(localStorage.getItem('QE')) || {
-      income: PROGRAMISTA_15K,
-      additionalIncome: 0,
-      expenses: [],
-    }
-  )
+const getKey = () => {
+  const now = new Date()
+
+  return `${now.getFullYear()}-${now.getMonth() + 1}` // js things
 }
 
-const persistExpense = expense => {
-  const userData = getUserData()
+const getUserData = () =>
+  fetch(`/api/userData?when=${getKey()}`, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  }).then(res => res.json())
 
-  localStorage.setItem(
-    'QE',
-    JSON.stringify({
-      ...userData,
-      expenses: [...userData.expenses, expense],
+const persistExpense = expense =>
+  fetch('/api/expenses', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      when: getKey(),
+      expense,
     }),
-  )
-
-  return {ok: true}
-}
+  }).then(res => res.json())
 
 class App extends Component {
   constructor(props) {
