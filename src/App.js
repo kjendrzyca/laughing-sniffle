@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import './App.css'
-import {Button, Form, Label, Segment, Grid} from 'semantic-ui-react'
+import {Message, Button, Form, Label, Segment, Grid} from 'semantic-ui-react'
+import * as Yup from 'yup'
 import {Formik} from 'formik'
 
 const {Input, Field, Checkbox} = Form
@@ -10,6 +11,10 @@ const CATEGORIES = ['jedzenie', 'samochód', 'inne', 'firma', 'mieszkanie']
 const {Row, Column} = Grid
 
 const PROGRAMISTA_15K = 15000
+
+const renderError = (touched, error) => touched
+  ? Boolean(error) && <Message color="red">{error}</Message>
+  : null
 
 class App extends Component {
   constructor(props) {
@@ -39,6 +44,11 @@ class App extends Component {
         onSubmit={(values, {setSubmitting, resetForm}) => {
           resetForm()
         }}
+        validationSchema={Yup.object().shape({
+          category: Yup.string().required('kategoria jest potrzebna'),
+          expense: Yup.string().required('wydatek jest ważny'),
+          howMuch: Yup.number().min(0.01, 'nic nie kosztuje 0zł ;('),
+        })}
       >
         {({
           values,
@@ -51,17 +61,7 @@ class App extends Component {
         }) => (
           <Form onSubmit={handleSubmit}>
             <Input
-              error={Boolean(false)}
-              fluid
-              id="expense"
-              label="wydatek"
-              onChange={handleChange}
-              placeholder="wydatek"
-              required
-              value={values.expense}
-            />
-            <Input
-              error={Boolean(false)}
+              error={Boolean(touched.howMuch && errors.howMuch)}
               fluid
               id="howMuch"
               label="kwota"
@@ -72,8 +72,20 @@ class App extends Component {
               type="number"
               value={values.howMuch}
             />
+            {renderError(touched.howMuch, errors.howMuch)}
             <Input
-              error={Boolean(false)}
+              error={Boolean(touched.expense && errors.expense)}
+              fluid
+              id="expense"
+              label="wydatek"
+              onChange={handleChange}
+              placeholder="wydatek"
+              required
+              value={values.expense}
+            />
+            {renderError(touched.expense, errors.expense)}
+            <Input
+              error={Boolean(touched.category && errors.category)}
               fluid
               id="category"
               label="kategoria"
@@ -83,6 +95,7 @@ class App extends Component {
               required
               value={values.category}
             />
+            {renderError(touched.category, errors.category)}
             <datalist id="categories">
               {CATEGORIES.map(category => (
                 <option key={category} value={category} />
@@ -97,8 +110,8 @@ class App extends Component {
             </Field>
             <Field>
               <Button
-                fluid
                 disabled={isSubmitting}
+                fluid
                 positive
                 size="huge"
                 type="submit"
