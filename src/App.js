@@ -1,4 +1,6 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types'
+
 import './App.css'
 import {Message, Button, Form, Label, Segment, Grid} from 'semantic-ui-react'
 import * as Yup from 'yup'
@@ -14,24 +16,6 @@ const PROGRAMISTA_15K = 15000
 
 const renderError = (touched, error) =>
   touched ? Boolean(error) && <Message color="red">{error}</Message> : null
-
-const getKey = () => {
-  const now = new Date()
-
-  return `${now.getFullYear()}-${now.getMonth() + 1}` // js things
-}
-
-const persistExpense = expense =>
-  fetch('/api/expenses', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      when: getKey(),
-      expense,
-    }),
-  }).then(res => res.json())
 
 class App extends Component {
   constructor(props) {
@@ -75,6 +59,7 @@ class App extends Component {
         onSubmit={async (values, {setSubmitting, resetForm}) => {
           setSubmitting(true)
 
+          const {persistExpense} = this.props
           const {errors} = await persistExpense(values)
 
           if (errors && errors.length) {
@@ -190,6 +175,11 @@ class App extends Component {
       </main>
     )
   }
+}
+
+App.propTypes = {
+  getUserData: PropTypes.func.isRequired,
+  persistExpense: PropTypes.func.isRequired,
 }
 
 export default App

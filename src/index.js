@@ -5,21 +5,10 @@ import 'semantic-ui-css/semantic.min.css'
 import App from './App'
 import * as serviceWorker from './serviceWorker'
 
-const getKey = () => {
-  const now = new Date()
-
-  return `${now.getFullYear()}-${now.getMonth() + 1}` // js things
-}
-
-const getUserData = () =>
-  fetch(`/api/userData?when=${getKey()}`, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  }).then(res => res.json())
+import {getUserData, persistExpense} from './api'
 
 ReactDOM.render(
-  <App getUserData={getUserData} />,
+  <App getUserData={getUserData} persistExpense={persistExpense} />,
   document.getElementById('root'),
 )
 
