@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types'
 
 import './App.css'
@@ -17,25 +17,24 @@ const PROGRAMISTA_15K = 15000
 const renderError = (touched, error) =>
   touched ? Boolean(error) && <Message color="red">{error}</Message> : null
 
-class App extends Component {
-  constructor(props) {
-    super(props)
+const renderMonth = () => {
+  return new Date().toLocaleDateString('pl-PL', {month: 'long'})
+}
 
-    this.state = {expenses: [], additionalIncome: 0, income: PROGRAMISTA_15K}
-  }
+const App = ({persistExpense, getUserData}) => {
+  const [income, setIncome] = useState(PROGRAMISTA_15K)
+  const [additionalIncome, setAdditionalIncome] = useState(0)
+  const [expenses, setExpenses] = useState([])
 
-  async componentDidMount() {
-    const {getUserData} = this.props
-    const userData = await getUserData()
-
-    this.setState({
-      ...userData,
-      expenses: userData.values,
+  useEffect(() => {
+    getUserData().then(userData => {
+      setIncome(userData.income)
+      setAdditionalIncome(userData.additionalIncome)
+      setExpenses(userData.values)
     })
-  }
+  }, [])
 
-  renderBalance = () => {
-    const {income, additionalIncome, expenses} = this.state
+  const renderBalance = () => {
     const balance =
       income +
       additionalIncome -
@@ -48,18 +47,13 @@ class App extends Component {
     )
   }
 
-  renderMonth = () => {
-    return new Date().toLocaleDateString('pl-PL', {month: 'long'})
-  }
-
-  renderForm = () => {
+  const renderForm = () => {
     return (
       <Formik
         initialValues={{expense: '', howMuch: 0, category: '', fixed: false}}
         onSubmit={async (values, {setSubmitting, resetForm}) => {
           setSubmitting(true)
 
-          const {persistExpense} = this.props
           const {errors} = await persistExpense(values)
 
           if (errors && errors.length) {
@@ -67,15 +61,9 @@ class App extends Component {
             return
           }
 
-          this.setState(
-            oldState => ({
-              expenses: [...oldState.expenses, values],
-            }),
-            () => {
-              setSubmitting(false)
-              resetForm()
-            },
-          )
+          setExpenses([...expenses, values])
+          setSubmitting(false)
+          resetForm()
         }}
         validationSchema={Yup.object().shape({
           category: Yup.string().required('kategoria jest potrzebna'),
@@ -158,23 +146,21 @@ class App extends Component {
     )
   }
 
-  render() {
-    return (
-      <main className="App">
-        <Grid container>
-          <Row textAlign="center">
-            <Column>
-              <Segment vertical>{this.renderBalance()}</Segment>
-              <Segment vertical>{this.renderMonth()}</Segment>
-            </Column>
-          </Row>
-          <Row>
-            <Column>{this.renderForm()}</Column>
-          </Row>
-        </Grid>
-      </main>
-    )
-  }
+  return (
+    <main className="App">
+      <Grid container>
+        <Row textAlign="center">
+          <Column>
+            <Segment vertical>{renderBalance()}</Segment>
+            <Segment vertical>{renderMonth()}</Segment>
+          </Column>
+        </Row>
+        <Row>
+          <Column>{renderForm()}</Column>
+        </Row>
+      </Grid>
+    </main>
+  )
 }
 
 App.propTypes = {

@@ -13,11 +13,16 @@ it('should render with 15000 balance initially, regardless of API response', asy
 
   // when
   const {getByText} = render(
-    <App getUserData={jest.fn(() => Promise.resolve(defaultUserData))} />,
+    <App
+      getUserData={jest.fn(() => Promise.resolve(defaultUserData))}
+      persistExpense={jest.fn()}
+    />,
   )
 
   // then
-  expect(getByText(expectedBalance.toString())).toBeInTheDocument()
+  await wait(() =>
+    expect(getByText(expectedBalance.toString())).toBeInTheDocument(),
+  )
 })
 
 it('should calculate balance based on received values', async () => {
@@ -32,7 +37,9 @@ it('should calculate balance based on received values', async () => {
   )
 
   // when
-  const {getByText} = render(<App getUserData={getUserData} />)
+  const {getByText} = render(
+    <App getUserData={getUserData} persistExpense={jest.fn()} />,
+  )
 
   // then
   expect(getUserData.mock.calls.length).toBe(1)
