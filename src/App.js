@@ -21,13 +21,6 @@ const getKey = () => {
   return `${now.getFullYear()}-${now.getMonth() + 1}` // js things
 }
 
-const getUserData = () =>
-  fetch(`/api/userData?when=${getKey()}`, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  }).then(res => res.json())
-
 const persistExpense = expense =>
   fetch('/api/expenses', {
     method: 'POST',
@@ -48,9 +41,13 @@ class App extends Component {
   }
 
   async componentDidMount() {
+    const {getUserData} = this.props
     const userData = await getUserData()
 
-    this.setState(userData)
+    this.setState({
+      ...userData,
+      expenses: userData.values,
+    })
   }
 
   renderBalance = () => {
