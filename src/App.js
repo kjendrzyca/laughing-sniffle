@@ -20,24 +20,24 @@ const renderMonth = () => {
   return new Date().toLocaleDateString('pl-PL', {month: 'long'})
 }
 const App = ({getUserData, persistExpense}) => {
-  const [state, setState] = useState({
-    expenses: [],
+  const [incomeState, setIncome] = useState({
     additionalIncome: 0,
     income: PROGRAMISTA_15K,
   })
+  const [expenses, setExpenses] = useState([])
 
   useEffect(() => {
     getUserData().then(({additionalIncome, income, values}) => {
-      setState({
+      setIncome({
         income,
         additionalIncome,
-        expenses: values,
       })
+      setExpenses(values)
     })
   }, [getUserData])
 
   const renderBalance = () => {
-    const {income, additionalIncome, expenses} = state
+    const {income, additionalIncome} = incomeState
     const balance =
       income +
       additionalIncome -
@@ -64,7 +64,7 @@ const App = ({getUserData, persistExpense}) => {
             return
           }
 
-          setState({...state, expenses: [...state.expenses, values]})
+          setExpenses([...expenses, values])
           setSubmitting(false)
           resetForm()
         }}
