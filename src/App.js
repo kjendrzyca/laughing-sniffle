@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import PropTypes from 'prop-types'
 import './App.css'
 import {Message, Button, Form, Label, Segment, Grid} from 'semantic-ui-react'
 import * as Yup from 'yup'
@@ -25,13 +26,6 @@ const renderMonth = () => {
   return new Date().toLocaleDateString('pl-PL', {month: 'long'})
 }
 
-const getUserData = () =>
-  fetch(`/api/userData?when=${getKey()}`, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  }).then(res => res.json())
-
 const persistExpense = expense =>
   fetch('/api/expenses', {
     method: 'POST',
@@ -45,6 +39,10 @@ const persistExpense = expense =>
   }).then(res => res.json())
 
 class App extends Component {
+  static propTypes = {
+    getUserData: PropTypes.func.isRequired,
+  }
+
   constructor(props) {
     super(props)
 
@@ -52,6 +50,7 @@ class App extends Component {
   }
 
   async componentDidMount() {
+    const {getUserData} = this.props
     const {additionalIncome, income, values} = await getUserData()
 
     this.setState({
