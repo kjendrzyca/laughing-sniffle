@@ -2,16 +2,15 @@ import React from 'react'
 import '@testing-library/jest-dom/extend-expect'
 import {render, wait} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {renderHook, act} from '@testing-library/react-hooks'
 
-import App, {useBalance} from './App'
+import App from './App'
 
 it('should render with 15000 balance initially, regardless of API response', async () => {
   // given
   const expectedBalance = 15000
 
   // when
-  const {getByText} = render(
+  const {findByText} = render(
     <App
       getUserData={jest
         .fn()
@@ -22,7 +21,7 @@ it('should render with 15000 balance initially, regardless of API response', asy
   )
 
   // then
-  expect(getByText(expectedBalance.toString())).toBeInTheDocument()
+  expect(await findByText(expectedBalance.toString())).toBeInTheDocument()
 })
 
 it('should show balance based on api response', async () => {
@@ -81,52 +80,4 @@ it('should update balance on click', async () => {
     howMuch,
     fixed: false,
   })
-})
-
-it('should start with balance equal to 15000', () => {
-  // given
-  const {result} = renderHook(() => useBalance())
-
-  // then
-  expect(result.current.balance).toEqual(15000)
-})
-
-it('should calculate balance when given userData', () => {
-  // given
-  const {result} = renderHook(() => useBalance())
-  const expectedBalance = 14950
-
-  // when
-  act(() => {
-    result.current.setUserData({
-      additionalIncome: 50,
-      income: 15000,
-      values: [{howMuch: 100}],
-    })
-  })
-
-  // then
-  expect(result.current.balance).toEqual(expectedBalance)
-})
-
-it('should recalculate balance correctly when new expense is added', () => {
-  // given
-  const {result} = renderHook(() => useBalance())
-  const expectedBalance = 14850
-
-  act(() => {
-    result.current.setUserData({
-      additionalIncome: 50,
-      income: 15000,
-      values: [{howMuch: 100}],
-    })
-  })
-
-  // when
-  act(() => {
-    result.current.addExpense({howMuch: 100})
-  })
-
-  // then
-  expect(result.current.balance).toEqual(expectedBalance)
 })

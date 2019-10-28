@@ -1,17 +1,17 @@
-import React, {useState, useEffect} from 'react'
+import React, {useEffect} from 'react'
 import PropTypes from 'prop-types'
 import './App.css'
 import {Message, Button, Form, Label, Segment, Grid} from 'semantic-ui-react'
 import * as Yup from 'yup'
 import {Formik} from 'formik'
 
+import useBalance from './useBalance'
+
 const {Input, Field, Checkbox} = Form
 
 const CATEGORIES = ['jedzenie', 'samochód', 'inne', 'firma', 'mieszkanie']
 
 const {Row, Column} = Grid
-
-const PROGRAMISTA_15K = 15000
 
 const renderError = (touched, error) =>
   touched ? Boolean(error) && <Message color="red">{error}</Message> : null
@@ -20,33 +20,12 @@ const renderMonth = () => {
   return new Date().toLocaleDateString('pl-PL', {month: 'long'})
 }
 
-export function useBalance() {
-  const [income, setIncome] = useState(15000)
-  const [additionalIncome, setAdditionalIncome] = useState(0)
-  const [expenses, setExpenses] = useState([])
-
-  const setUserData = ({income, additionalIncome, values}) => {
-    setIncome(income)
-    setAdditionalIncome(additionalIncome)
-    setExpenses(values)
-  }
-
-  const balance =
-    income +
-    additionalIncome -
-    expenses.reduce((accu, expense) => accu + expense.howMuch, 0)
-
-  const addExpense = expense => setExpenses([...expenses, expense])
-
-  return {balance, setUserData, addExpense}
-}
-
 const App = ({getUserData, persistExpense}) => {
   const {balance, setUserData, addExpense} = useBalance()
 
   useEffect(() => {
     getUserData().then(setUserData)
-  }, [getUserData])
+  }, [getUserData, setUserData])
 
   const renderBalance = () => {
     return (
