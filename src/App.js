@@ -16,31 +16,14 @@ const PROGRAMISTA_15K = 15000
 const renderError = (touched, error) =>
   touched ? Boolean(error) && <Message color="red">{error}</Message> : null
 
-const getKey = () => {
-  const now = new Date()
-
-  return `${now.getFullYear()}-${now.getMonth() + 1}` // js things
-}
-
 const renderMonth = () => {
   return new Date().toLocaleDateString('pl-PL', {month: 'long'})
 }
 
-const persistExpense = expense =>
-  fetch('/api/expenses', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      when: getKey(),
-      expense,
-    }),
-  }).then(res => res.json())
-
 class App extends Component {
   static propTypes = {
     getUserData: PropTypes.func.isRequired,
+    persistExpense: PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -81,6 +64,7 @@ class App extends Component {
         onSubmit={async (values, {setSubmitting, resetForm}) => {
           setSubmitting(true)
 
+          const {persistExpense} = this.props
           const {errors} = await persistExpense(values)
 
           if (errors && errors.length) {

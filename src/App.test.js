@@ -1,6 +1,7 @@
 import React from 'react'
 import '@testing-library/jest-dom/extend-expect'
 import {render, wait} from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import App from './App'
 
@@ -42,4 +43,41 @@ it('should show balance based on api response', async () => {
   await wait(() =>
     expect(getByText(expectedBalance.toString())).toBeInTheDocument(),
   )
+})
+
+it('should update balance on click', async () => {
+  // given
+  const howMuch = 100
+  const userData = {income: 15000, additionalIncome: 0, values: []}
+  const expectedBalance = userData.income - 100
+
+  const getUserData = jest
+    .fn()
+    .mockImplementationOnce(() => Promise.resolve(userData))
+  const persistExpense = jest
+    .fn()
+    .mockImplementationOnce(() => Promise.resolve({ok: true}))
+
+  const {getByText, getByLabelText} = render(
+    <App getUserData={getUserData} persistExpense={persistExpense} />,
+  )
+
+  // when
+  userEvent.type(getByLabelText('kwota'), howMuch.toString())
+  userEvent.type(getByLabelText('wydatek'), 'test-expense')
+  userEvent.type(getByLabelText('kategoria'), 'test-category')
+  userEvent.click(getByText('OK'))
+
+  // then
+  await wait(() =>
+    expect(getByText(expectedBalance.toString())).toBeInTheDocument(),
+  )
+  await wait(() => expect(persistExpense.mock.calls.length).toBe(1))
+
+  expect(persistExpense.mock.calls[0][0]).toEqual({
+    category: 'test-category',
+    expense: 'test-expense',
+    howMuch,
+    fixed: false,
+  })
 })
