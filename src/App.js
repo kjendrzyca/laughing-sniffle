@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, {useState, useEffect} from 'react'
 import PropTypes from 'prop-types'
 import './App.css'
 import {Message, Button, Form, Label, Segment, Grid} from 'semantic-ui-react'
@@ -19,32 +19,25 @@ const renderError = (touched, error) =>
 const renderMonth = () => {
   return new Date().toLocaleDateString('pl-PL', {month: 'long'})
 }
+const App = ({getUserData, persistExpense}) => {
+  const [state, setState] = useState({
+    expenses: [],
+    additionalIncome: 0,
+    income: PROGRAMISTA_15K,
+  })
 
-class App extends Component {
-  static propTypes = {
-    getUserData: PropTypes.func.isRequired,
-    persistExpense: PropTypes.func.isRequired,
-  }
-
-  constructor(props) {
-    super(props)
-
-    this.state = {expenses: [], additionalIncome: 0, income: PROGRAMISTA_15K}
-  }
-
-  async componentDidMount() {
-    const {getUserData} = this.props
-    const {additionalIncome, income, values} = await getUserData()
-
-    this.setState({
-      income,
-      additionalIncome,
-      expenses: values,
+  useEffect(() => {
+    getUserData().then(({additionalIncome, income, values}) => {
+      setState({
+        income,
+        additionalIncome,
+        expenses: values,
+      })
     })
-  }
+  }, [getUserData])
 
-  renderBalance = () => {
-    const {income, additionalIncome, expenses} = this.state
+  const renderBalance = () => {
+    const {income, additionalIncome, expenses} = state
     const balance =
       income +
       additionalIncome -
@@ -57,14 +50,13 @@ class App extends Component {
     )
   }
 
-  renderForm = () => {
+  const renderForm = () => {
     return (
       <Formik
         initialValues={{expense: '', howMuch: 0, category: '', fixed: false}}
         onSubmit={async (values, {setSubmitting, resetForm}) => {
           setSubmitting(true)
 
-          const {persistExpense} = this.props
           const {errors} = await persistExpense(values)
 
           if (errors && errors.length) {
@@ -72,15 +64,9 @@ class App extends Component {
             return
           }
 
-          this.setState(
-            oldState => ({
-              expenses: [...oldState.expenses, values],
-            }),
-            () => {
-              setSubmitting(false)
-              resetForm()
-            },
-          )
+          setState({...state, expenses: [...state.expenses, values]})
+          setSubmitting(false)
+          resetForm()
         }}
         validationSchema={Yup.object().shape({
           category: Yup.string().required('kategoria jest potrzebna'),
@@ -163,23 +149,26 @@ class App extends Component {
     )
   }
 
-  render() {
-    return (
-      <main className="App">
-        <Grid container>
-          <Row textAlign="center">
-            <Column>
-              <Segment vertical>{this.renderBalance()}</Segment>
-              <Segment vertical>{renderMonth()}</Segment>
-            </Column>
-          </Row>
-          <Row>
-            <Column>{this.renderForm()}</Column>
-          </Row>
-        </Grid>
-      </main>
-    )
-  }
+  return (
+    <main className="App">
+      <Grid container>
+        <Row textAlign="center">
+          <Column>
+            <Segment vertical>{renderBalance()}</Segment>
+            <Segment vertical>{renderMonth()}</Segment>
+          </Column>
+        </Row>
+        <Row>
+          <Column>{renderForm()}</Column>
+        </Row>
+      </Grid>
+    </main>
+  )
+}
+
+App.propTypes = {
+  getUserData: PropTypes.func.isRequired,
+  persistExpense: PropTypes.func.isRequired,
 }
 
 export default App
