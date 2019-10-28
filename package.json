@@ -3,12 +3,26 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "cookie-parser": "^1.4.4",
+    "dotenv": "^8.0.0",
+    "express": "^4.17.1",
+    "express-session": "^1.16.2",
+    "formik": "^1.5.7",
+    "morgan": "^1.9.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "react-scripts": "3.0.1"
+    "react-scripts": "3.0.1",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.87.2",
+    "tarnas-utils": "tarnas14/tarnas-utils",
+    "yup": "^0.27.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "deploy": "git push heroku master -f",
+    "server": "node -r dotenv/config server.js",
+    "start": "yarn server",
+    "dev-front": "react-scripts start",
+    "dev-server": "nodemon --ignore src --ignore package.json --ignore build -x 'yarn server'",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -27,5 +41,13 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "devDependencies": {
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-prettier": "^6.0.0",
+    "eslint-plugin-prettier": "^3.1.0",
+    "nodemon": "^1.19.1",
+    "prettier": "^1.18.2"
+  },
+  "proxy": "http://localhost:3001"
 }
