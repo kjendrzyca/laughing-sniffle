@@ -2,7 +2,7 @@ import React from 'react'
 import '@testing-library/jest-dom/extend-expect'
 import {render, wait} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {renderHook} from '@testing-library/react-hooks'
+import {renderHook, act} from '@testing-library/react-hooks'
 
 import App, {useBalance} from './App'
 
@@ -89,4 +89,22 @@ it('should start with balance equal to 15000', () => {
 
   // then
   expect(result.current.balance).toEqual(15000)
+})
+
+it('should calculate balance when given userData', () => {
+  // given
+  const {result} = renderHook(() => useBalance())
+  const expectedBalance = 14950
+
+  // when
+  act(() => {
+    result.current.setUserData({
+      additionalIncome: 50,
+      income: 15000,
+      values: [{howMuch: 100}],
+    })
+  })
+
+  // then
+  expect(result.current.balance).toEqual(expectedBalance)
 })

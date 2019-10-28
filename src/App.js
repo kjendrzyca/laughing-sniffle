@@ -21,7 +21,22 @@ const renderMonth = () => {
 }
 
 export function useBalance() {
-  return {balance: 15000}
+  const [income, setIncome] = useState(15000)
+  const [additionalIncome, setAdditionalIncome] = useState(0)
+  const [expenses, setExpenses] = useState([])
+
+  const setUserData = ({income, additionalIncome, values}) => {
+    setIncome(income)
+    setAdditionalIncome(additionalIncome)
+    setExpenses(values)
+  }
+
+  const balance =
+    income +
+    additionalIncome -
+    expenses.reduce((accu, expense) => accu + expense.howMuch, 0)
+
+  return {balance, setUserData}
 }
 
 const App = ({getUserData, persistExpense}) => {
