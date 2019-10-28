@@ -36,33 +36,19 @@ export function useBalance() {
     additionalIncome -
     expenses.reduce((accu, expense) => accu + expense.howMuch, 0)
 
-  return {balance, setUserData}
+  const addExpense = expense => setExpenses([...expenses, expense])
+
+  return {balance, setUserData, addExpense}
 }
 
 const App = ({getUserData, persistExpense}) => {
-  const [incomeState, setIncome] = useState({
-    additionalIncome: 0,
-    income: PROGRAMISTA_15K,
-  })
-  const [expenses, setExpenses] = useState([])
+  const {balance, setUserData, addExpense} = useBalance()
 
   useEffect(() => {
-    getUserData().then(({additionalIncome, income, values}) => {
-      setIncome({
-        income,
-        additionalIncome,
-      })
-      setExpenses(values)
-    })
+    getUserData().then(setUserData)
   }, [getUserData])
 
   const renderBalance = () => {
-    const {income, additionalIncome} = incomeState
-    const balance =
-      income +
-      additionalIncome -
-      expenses.reduce((accu, expense) => accu + expense.howMuch, 0)
-
     return (
       <Label color="green" size="huge">
         {balance}
@@ -84,7 +70,7 @@ const App = ({getUserData, persistExpense}) => {
             return
           }
 
-          setExpenses([...expenses, values])
+          addExpense(values)
           setSubmitting(false)
           resetForm()
         }}

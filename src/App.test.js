@@ -108,3 +108,25 @@ it('should calculate balance when given userData', () => {
   // then
   expect(result.current.balance).toEqual(expectedBalance)
 })
+
+it('should recalculate balance correctly when new expense is added', () => {
+  // given
+  const {result} = renderHook(() => useBalance())
+  const expectedBalance = 14850
+
+  act(() => {
+    result.current.setUserData({
+      additionalIncome: 50,
+      income: 15000,
+      values: [{howMuch: 100}],
+    })
+  })
+
+  // when
+  act(() => {
+    result.current.addExpense({howMuch: 100})
+  })
+
+  // then
+  expect(result.current.balance).toEqual(expectedBalance)
+})
