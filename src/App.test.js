@@ -2,8 +2,9 @@ import React from 'react'
 import '@testing-library/jest-dom/extend-expect'
 import {render, wait} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import {renderHook} from '@testing-library/react-hooks'
 
-import App from './App'
+import App, {useBalance} from './App'
 
 it('should render with 15000 balance initially, regardless of API response', async () => {
   // given
@@ -80,4 +81,12 @@ it('should update balance on click', async () => {
     howMuch,
     fixed: false,
   })
+})
+
+it('should start with balance equal to 15000', () => {
+  // given
+  const {result} = renderHook(() => useBalance())
+
+  // then
+  expect(result.current.balance).toEqual(15000)
 })

@@ -19,6 +19,11 @@ const renderError = (touched, error) =>
 const renderMonth = () => {
   return new Date().toLocaleDateString('pl-PL', {month: 'long'})
 }
+
+export function useBalance() {
+  return {balance: 15000}
+}
+
 const App = ({getUserData, persistExpense}) => {
   const [incomeState, setIncome] = useState({
     additionalIncome: 0,
