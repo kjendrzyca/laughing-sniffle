@@ -1,68 +1,27 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Webinar React Hooks
 
-## Available Scripts
+Example of rewriting a very simple (one component) App frm `class`ic React to react Hooks.
 
-In the project directory, you can run:
+The application (as visible on branch `master`) is a simple application to store your expense history.
+It can be written from scratch in ~45 minutes (as shown [here](https://www.youtube.com/watch?v=8VI3hF6Y6WY))
 
-### `npm start`
+The webinar recording is available [here in Polish](https://www.facebook.com/events/412768789662341/permalink/417481199191100/), but you can follow the steps on this repo by following tags.
+These tags are pretty much commits on branch `tdd-tarnas`, so you can also review it there.
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+We started with tests:
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+- tag `test1` - first test to check rendering of the application
+- tag `test2` - test if the application correctly takes data from the server
+- tag `test3` - test if expenses are correctly represented and sent to server
+- tag `hooks` - rewrite the component to hooks and see if it still works
 
-### `npm test`
+At this point we prove that you `can` achieve the same thing with class and hooks.
+But we can go even further beyond.
+In the next steps you can see test-driven implementation of `useBalance` hook, which encapsulates the logic of expenses calculation.
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- tag `setp1`
+- tag `setp2`
+- tag `setp3`
+- tag `split` - unfortunately when we were preparing we used hooks in the same test file, so we decided to split it for clarity
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Comments and PRs welcome!
